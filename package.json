@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@nastyox/rando.js": "^2.0.5",
+    "requirejs": "^2.3.6"
+  }
+}
