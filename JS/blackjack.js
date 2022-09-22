@@ -27,7 +27,10 @@ function StartGame(){
     document.getElementById("startBtn").hidden = true;
     userCards.forEach(x => UserCardHtml(x))
     dealerCards.forEach(x => DealerCardHtml(x))
+    CheckPoints()
     endGame = false
+    document.getElementById("Hit").hidden = false
+    document.getElementById("Stand").hidden = false
     // while (!endGame){
     //     DrawCard()
     // }
@@ -66,7 +69,7 @@ function ResultHtml(result){
 
 function Shuffle(){
     for (let i = 0; i < Math.floor(Math.random() * 10); i++){
-        let deckCopy = deck;
+        let deckCopy = deck.slice();
         let index = []
         deckCopy.forEach(x => index.push(deckCopy.indexOf(x)))
         deck.forEach(x => deckCopy[index.splice(Math.floor(Math.random() * index.length), 1)[0]] = x)
@@ -80,18 +83,23 @@ function UserHit(){
 
 function UserStand(){
     userStand = true;
+    while(!endGame){
+        DrawCard()
+    }
 }
 
 function DrawCard(){
-    if (!userStand) {
-        userCards.push(deck.pop())
-        UserCardHtml(userCards[userCards.length - 1])
-        CheckPoints()
+    if (!endGame){
+        if (!userStand) {
+            userCards.push(deck.pop())
+            UserCardHtml(userCards[userCards.length - 1])
+            CheckPoints()
         }
-    else {
-        dealerCards.push(deck.pop())
-        DealerCardHtml(dealerCards[dealerCards.length - 1])
-        CheckPoints()
+        else {
+            dealerCards.push(deck.pop())
+            DealerCardHtml(dealerCards[dealerCards.length - 1])
+            CheckPoints()
+        }
     }
 }
 
