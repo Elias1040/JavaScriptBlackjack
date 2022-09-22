@@ -1,21 +1,11 @@
-// var requirejs = require("../node_modules/requirejs//bin/r.js")
-// requirejs.config({
-//     //Pass the top-level main.js/index.js require
-//     //function to requirejs so that node modules
-//     //are loaded relative to the top-level JS file.
-//     nodeRequire: require
-// });
+// const {rando, randoSequence} = require('@nastyox/rando.js')
 
-const {rando, randoSequence} = SetRequire()
+var deck = []
+var usersTurn = true;
+var userStand = false;
+var endGame = false;
 
-function SetRequire(){
-    if (typeof process === 'object'){
-        return require('@nastyox/rando.js')
-    }
-    else{
-        return null
-    }
-}
+const suits = { 0: "Hearts", 1: "Diamonds", 2: "Spades", 3: "Clubs"}
 
 class Card {
     constructor(suit, value){
@@ -24,65 +14,112 @@ class Card {
     }
 }
 
-// var deck = [cards, cards, cards, cards];
-// var userCards = [deck[rando(0, 3)].splice(rando(0, 12), 1)[0]];
-// var dealerCards = [deck[rando(0, 3)].splice(rando(0, 12), 1)[0]];
-
-
-const suits = { 0: "Hearts", 1: "Diamonds", 2: "Spades", 3: "Clubs"}
-var deck = []
-for (let suit = 0; suit < 4; suit++) {
-    for (let card = 1; card < 13; card++)
-    {
-        deck.push(new Card(suit, (card == 0 ? 0 : (card <= 10 ? card : 10))))
-    }
-}
-
-let shuffles = Math.floor(Math.random() * 10)
-for (let i = 0; i < shuffles; i++){
-    Shuffle()
-}
-
-function Shuffle(){
-    let deckCopy = deck;
-    let index = []
-    deckCopy.forEach(x => index.push(deckCopy.indexOf(x)))
-    deck.forEach(x => deckCopy[index.splice(Math.floor(Math.random() * index.length), 1)[0]] = x)
-    deck = deckCopy
-}
-
-var userStand = false;
-var dealerStand = false;
-var usersTurn = true;
-var endGame = false;
+LoadDeck()
+Shuffle()
 var userCards = [deck.pop(), deck.pop()]
 var dealerCards = [deck.pop(), deck.pop()]
 
+// while (!endGame){
+//     DrawCard()
+// }
 
 function StartGame(){
     document.getElementById("startBtn").hidden = true;
+    userCards.forEach(x => UserCardHtml(x))
+    dealerCards.forEach(x => DealerCardHtml(x))
     endGame = false
-    while (-endGame){
-        DrawCard()
+    // while (!endGame){
+    //     DrawCard()
+    // }
+}
+
+function LoadDeck(){
+        for (let suit = 0; suit < 4; suit++) {
+            for (let card = 1; card < 13; card++)
+            {
+                deck.push(new Card(suit, (card == 0 ? 0 : (card <= 10 ? card : 10))))
+            }
+        }
+}
+
+function UserCardHtml(card){
+    let htmlCard = document.createElement("div")
+    htmlCard.className = "col-3 border border-black border-2"
+    let htmlPoints = document.createElement("p")
+    htmlPoints.innerText = card.suit + " " + card.value
+    htmlCard.appendChild(htmlPoints)
+    document.getElementById("UserSide").appendChild(htmlCard)
+}
+
+function DealerCardHtml(card){
+    var htmlCard = document.createElement("div")
+    htmlCard.className = "col-3 border border-black border-2"
+    var htmlPoints = document.createElement("p")
+    htmlPoints.innerText = card.suit + " " + card.value
+    htmlCard.appendChild(htmlPoints)
+    document.getElementById("DealerSide").appendChild(htmlCard)
+}
+
+function ResultHtml(result){
+    document.getElementById("Result").innerText = result
+}
+
+function Shuffle(){
+    for (let i = 0; i < Math.floor(Math.random() * 10); i++){
+        let deckCopy = deck;
+        let index = []
+        deckCopy.forEach(x => index.push(deckCopy.indexOf(x)))
+        deck.forEach(x => deckCopy[index.splice(Math.floor(Math.random() * index.length), 1)[0]] = x)
+        deck = deckCopy
     }
 }
 
-while (!endGame){
+function UserHit(){
     DrawCard()
 }
 
+function UserStand(){
+    userStand = true;
+}
 
 function DrawCard(){
-    if (usersTurn) {
+    if (!userStand) {
         userCards.push(deck.pop())
+        UserCardHtml(userCards[userCards.length - 1])
         CheckPoints()
-        usersTurn = false
         }
     else {
         dealerCards.push(deck.pop())
+        DealerCardHtml(dealerCards[dealerCards.length - 1])
         CheckPoints()
-        usersTurn = true
     }
+}
+
+function CheckPoints(){
+    let userPointSum = AddPoints(userCards)
+    let dealerPointSum = AddPoints(dealerCards)
+
+    UserPointsHtml(userPointSum)
+    DealerPointsHtml(dealerPointSum)
+
+    if (userPointSum > 21 || dealerPointSum == 21 || (dealerPointSum < 21 && dealerPointSum > userPointSum && userStand)) {
+        console.log("you lost")
+        ResultHtml("You lose!")
+        endGame = true
+    }
+    else if (userPointSum == 21 || (dealerPointSum > 21 && userPointSum <= 21)) {
+        console.log("you won")
+        ResultHtml("You win!")
+        endGame = true
+    }
+}
+
+function UserPointsHtml(points){
+    document.getElementById("UserPoints").innerText = points
+}
+
+function DealerPointsHtml(points){
+    document.getElementById("DealerPoints").innerText = points
 }
 
 function AddPoints(cards) {
@@ -97,7 +134,7 @@ function AddPoints(cards) {
     }, this)
 
     let aceCards = cards.filter(x => Array.isArray(x.value), this)
-    
+
     if (points.reduce((x, y) => x + y) > 21 && aceCards.length > 0) {
         aceCards.forEach(x => {
             if (points.reduce((x, y) => x + y) > 21){
@@ -109,16 +146,3 @@ function AddPoints(cards) {
     return points.reduce((x, y) => x + y)
 }
 
-function CheckPoints(){
-    let userPointSum = AddPoints(userCards)
-    let dealerPointSum = AddPoints(dealerCards)
-
-    if (userPointSum > 21 || dealerPointSum == 21 || (dealerPointSum < 21 && dealerPointSum > userPointSum && userStand)) {
-        console.log("you lost")
-        endGame = true
-    }
-    else if (userPointSum == 21 || dealerPointSum > 21 || (userPointSum > dealerPointSum && dealerStand)) {
-        console.log("you won")
-        endGame = true
-    }
-}
