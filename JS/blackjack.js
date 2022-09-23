@@ -5,12 +5,13 @@ var usersTurn = true;
 var userStand = false;
 var endGame = false;
 
-const suits = { 0: "Hearts", 1: "Diamonds", 2: "Spades", 3: "Clubs"}
+const suits = { 0: "Spades", 1: "Hearts", 2: "Clubs", 3: "Diamonds"}
 
 class Card {
-    constructor(suit, value){
+    constructor(suit, value, imgValue){
         this.suit = suits[suit]
         this.value = value
+        this.imageSrc = `/Pics/Cards/${imgValue}&${suit}.png`
     }
 }
 
@@ -31,35 +32,28 @@ function StartGame(){
     endGame = false
     document.getElementById("Hit").hidden = false
     document.getElementById("Stand").hidden = false
-    // while (!endGame){
-    //     DrawCard()
-    // }
 }
 
 function LoadDeck(){
-        for (let suit = 0; suit < 4; suit++) {
-            for (let card = 1; card < 13; card++)
-            {
-                deck.push(new Card(suit, (card == 0 ? 0 : (card <= 10 ? card : 10))))
-            }
+    for (let suit = 0; suit < 4; suit++) {
+        for (let card = 1; card < 13; card++)
+        {
+            deck.push(new Card(suit, (card == 1 ? [1, 11] : (card <= 10 ? card : 10)), (card == 1 ? [1, 11] : card)))
         }
+    }
 }
 
 function UserCardHtml(card){
-    let htmlCard = document.createElement("div")
-    htmlCard.className = "col-3 border border-black border-2"
-    let htmlPoints = document.createElement("p")
-    htmlPoints.innerText = card.suit + " " + card.value
-    htmlCard.appendChild(htmlPoints)
+    let htmlCard = document.createElement("img")
+    htmlCard.className = "border border-black border-2"
+    htmlCard.src = card.imageSrc
     document.getElementById("UserSide").appendChild(htmlCard)
 }
 
 function DealerCardHtml(card){
-    var htmlCard = document.createElement("div")
-    htmlCard.className = "col-3 border border-black border-2"
-    var htmlPoints = document.createElement("p")
-    htmlPoints.innerText = card.suit + " " + card.value
-    htmlCard.appendChild(htmlPoints)
+    let htmlCard = document.createElement("img")
+    htmlCard.className = "border border-black border-2"
+    htmlCard.src = card.imageSrc
     document.getElementById("DealerSide").appendChild(htmlCard)
 }
 
