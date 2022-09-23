@@ -1,68 +1,67 @@
 // const {rando, randoSequence} = require('@nastyox/rando.js')
 
-var deck = []
+
 var usersTurn = true;
 var userStand = false;
 var endGame = false;
 
-const suits = { 0: "Spades", 1: "Hearts", 2: "Clubs", 3: "Diamonds"}
+const suits = { 0: "Spades", 1: "Hearts", 2: "Clubs", 3: "Diamonds" }
 
 class Card {
-    constructor(suit, value, imgValue){
+    constructor(suit, value, imgValue) {
         this.suit = suits[suit]
         this.value = value
         this.imageSrc = `/Pics/Cards/${imgValue}&${suit}.png`
     }
 }
 
-LoadDeck()
-Shuffle()
-var userCards = [deck.pop(), deck.pop()]
-var dealerCards = [deck.pop(), deck.pop()]
+var deck = function() {
+    let arr = [];
+    for (let suit = 0; suit < 4; suit++) {
+        for (let card = 1; card < 13; card++) {
+            arr.push(new Card(suit, (card <= 10 ? card : 10), card))
+        }
+    }
+    return arr;
+}();
+
+Shuffle();
+
+var userCards = [deck.pop(), deck.pop()];
+var dealerCards = [deck.pop(), deck.pop()];
 
 // while (!endGame){
 //     DrawCard()
 // }
 
-function StartGame(){
+function StartGame() {
     document.getElementById("startBtn").hidden = true;
-    userCards.forEach(x => UserCardHtml(x))
-    dealerCards.forEach(x => DealerCardHtml(x))
-    CheckPoints()
-    endGame = false
-    document.getElementById("Hit").hidden = false
-    document.getElementById("Stand").hidden = false
+    userCards.forEach(x => UserCardHtml(x));
+    dealerCards.forEach(x => DealerCardHtml(x));
+    CheckPoints();
+    endGame = false;
+    document.getElementById("Hit").hidden = false;
+    document.getElementById("Stand").hidden = false;
 }
 
-function LoadDeck(){
-    for (let suit = 0; suit < 4; suit++) {
-        for (let card = 1; card < 13; card++)
-        {
-            deck.push(new Card(suit, (card == 1 ? [1, 11] : (card <= 10 ? card : 10)), (card == 1 ? [1, 11] : card)))
-        }
-    }
+function UserCardHtml(card) {
+    let htmlCard = document.createElement("img");
+    htmlCard.className = "border border-black border-2";
+    htmlCard.src = card.imageSrc;
+    document.getElementById("UserSide").appendChild(htmlCard);
 }
 
-function UserCardHtml(card){
-    let htmlCard = document.createElement("img")
-    htmlCard.className = "border border-black border-2"
-    htmlCard.src = card.imageSrc
-    document.getElementById("UserSide").appendChild(htmlCard)
+function DealerCardHtml(card) {
+    let htmlCard = document.createElement("img");
+    htmlCard.className = "border border-black border-2";
+    htmlCard.src = card.imageSrc;
+    document.getElementById("DealerSide").appendChild(htmlCard);
 }
 
-function DealerCardHtml(card){
-    let htmlCard = document.createElement("img")
-    htmlCard.className = "border border-black border-2"
-    htmlCard.src = card.imageSrc
-    document.getElementById("DealerSide").appendChild(htmlCard)
-}
+var ResultHtml = (result) => document.getElementById("Result").innerText = result;
 
-function ResultHtml(result){
-    document.getElementById("Result").innerText = result
-}
-
-function Shuffle(){
-    for (let i = 0; i < Math.floor(Math.random() * 10); i++){
+function Shuffle() {
+    for (let i = 0; i < Math.floor(Math.random() * 10); i++) {
         let deckCopy = deck.slice();
         let index = []
         deckCopy.forEach(x => index.push(deckCopy.indexOf(x)))
@@ -71,19 +70,19 @@ function Shuffle(){
     }
 }
 
-function UserHit(){
+function UserHit() {
     DrawCard()
 }
 
-function UserStand(){
+function UserStand() {
     userStand = true;
-    while(!endGame){
+    while (!endGame) {
         DrawCard()
     }
 }
 
-function DrawCard(){
-    if (!endGame){
+function DrawCard() {
+    if (!endGame) {
         if (!userStand) {
             userCards.push(deck.pop())
             UserCardHtml(userCards[userCards.length - 1])
@@ -97,7 +96,7 @@ function DrawCard(){
     }
 }
 
-function CheckPoints(){
+function CheckPoints() {
     let userPointSum = AddPoints(userCards)
     let dealerPointSum = AddPoints(dealerCards)
 
@@ -116,35 +115,24 @@ function CheckPoints(){
     }
 }
 
-function UserPointsHtml(points){
+function UserPointsHtml(points) {
     document.getElementById("UserPoints").innerText = points
 }
 
-function DealerPointsHtml(points){
+function DealerPointsHtml(points) {
     document.getElementById("DealerPoints").innerText = points
 }
 
 function AddPoints(cards) {
-    let points = []
+    let points = 0
     cards.forEach(x => {
-        if (!Array.isArray(x.value)){
-            points.push(x.value)
-        }
-        else{
-            points.push(x.value[1])
-        }
+        points += x.value
     }, this)
-
-    let aceCards = cards.filter(x => Array.isArray(x.value), this)
-
-    if (points.reduce((x, y) => x + y) > 21 && aceCards.length > 0) {
-        aceCards.forEach(x => {
-            if (points.reduce((x, y) => x + y) > 21){
-                points[points.findIndex(p => p == x.value[1])] = x.value[0]
-            }
-        }, this);
-    }
-
-    return points.reduce((x, y) => x + y)
+    cards.forEach(x => {
+        if (x.value == 1 && points <= 11) {
+            points += 10
+        }
+    })
+    return points
 }
 
