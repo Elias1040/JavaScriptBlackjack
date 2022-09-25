@@ -1,7 +1,5 @@
 // const {rando, randoSequence} = require('@nastyox/rando.js')
 
-
-var usersTurn = true;
 var userStand = false;
 var endGame = false;
 
@@ -15,29 +13,32 @@ class Card {
     }
 }
 
-var deck = function () {
-    let arr = [];
-    for (let suit = 0; suit < 4; suit++) {
-        for (let card = 1; card < 13; card++) {
-            arr.push(new Card(suit, (card <= 10 ? card : 10), card))
-        }
-    }
-    return arr;
-}();
+var deck;
 
-Shuffle();
 
-var userCards = [deck.pop(), deck.pop()];
-var dealerCards = [deck.pop(), deck.pop()];
+var userCards;
+var dealerCards;
 
 // while (!endGame){
-//     DrawCard()
-// }
-
-
-
+    //     DrawCard()
+    // }
+    
+    
+    
 function StartGame() {
+    deck = function () {
+        let arr = [];
+        for (let suit = 0; suit < 4; suit++) {
+            for (let card = 1; card < 13; card++) {
+                arr.push(new Card(suit, (card <= 10 ? card : 10), card))
+            }
+        }
+        return arr;
+    }();
+    Shuffle();
     document.getElementById("startBtn").hidden = true;
+    userCards = [deck.pop(), deck.pop()]
+    dealerCards = [deck.pop(), deck.pop()]
     userCards.forEach((x, y) => setTimeout(() => UserCardHtml(x), 225 * (y + 1)));
     dealerCards.forEach((x, y) => setTimeout(() => DealerCardHtml(x), 225 * (y + 3)));
     endGame = false;
@@ -49,7 +50,18 @@ function StartGame() {
 }
 
 function RestartGame() {
-
+    while (document.getElementById("UserSide").hasChildNodes()){
+        document.getElementById("UserSide").removeChild(document.getElementById("UserSide").firstChild)
+    }
+    while (document.getElementById("DealerSide").hasChildNodes()){
+        document.getElementById("DealerSide").removeChild(document.getElementById("DealerSide").firstChild)
+    }
+    userCards = []
+    dealerCards = []
+    userStand = false
+    document.getElementById("Result").parentElement.parentElement.className = "d-none"
+    document.getElementById("canvas").className = "col-12 h-100"
+    StartGame();
 }
 
 function UserCardHtml(card) {
@@ -76,8 +88,8 @@ function ResultHtml(result) {
     document.getElementById("Hit").hidden = true;
     document.getElementById("Stand").hidden = true;
     document.getElementById("Result").parentElement.parentElement.className = "col-12 h-50 d-flex justify-content-center position-absolute top-50 start-50 translate-middle"
-    document.getElementById("canvas").style.opacity = 0.2
-    document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center animate__animated animate__fadeInDownBig"
+    document.getElementById("canvas").className = "col-12 h-100 blur"
+    document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center fade-in-top"
 }
 
 function Shuffle() {
@@ -102,8 +114,7 @@ function UserStand() {
     }
 }
 
-function DrawCard() {
-    if (!endGame) {
+function DrawCard() {    if (!endGame) {
         if (!userStand) {
             userCards.push(deck.pop())
             UserCardHtml(userCards[userCards.length - 1])
