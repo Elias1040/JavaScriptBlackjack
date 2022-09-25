@@ -1,5 +1,8 @@
 // const {rando, randoSequence} = require('@nastyox/rando.js')
 
+var deck;
+var userHand;
+var dealerHand;
 var userStand = false;
 var endGame = false;
 
@@ -13,11 +16,8 @@ class Card {
     }
 }
 
-var deck;
 
 
-var userCards;
-var dealerCards;
 
 // while (!endGame){
     //     DrawCard()
@@ -37,10 +37,10 @@ function StartGame() {
     }();
     Shuffle();
     document.getElementById("startBtn").hidden = true;
-    userCards = [deck.pop(), deck.pop()]
-    dealerCards = [deck.pop(), deck.pop()]
-    userCards.forEach((x, y) => setTimeout(() => UserCardHtml(x), 225 * (y + 1)));
-    dealerCards.forEach((x, y) => setTimeout(() => DealerCardHtml(x), 225 * (y + 3)));
+    userHand = [deck.pop(), deck.pop()]
+    dealerHand = [deck.pop(), deck.pop()]
+    userHand.forEach((x, y) => setTimeout(() => UserCardHtml(x), 225 * (y + 1)));
+    dealerHand.forEach((x, y) => setTimeout(() => DealerCardHtml(x), 225 * (y + 3)));
     endGame = false;
     CheckPoints();
     document.getElementById("UserPoints").parentElement.hidden = false
@@ -56,8 +56,8 @@ function RestartGame() {
     while (document.getElementById("DealerSide").hasChildNodes()){
         document.getElementById("DealerSide").removeChild(document.getElementById("DealerSide").firstChild)
     }
-    userCards = []
-    dealerCards = []
+    userHand = []
+    dealerHand = []
     userStand = false
     document.getElementById("Result").parentElement.parentElement.className = "d-none"
     document.getElementById("canvas").className = "col-12 h-100"
@@ -77,7 +77,12 @@ function UserCardHtml(card) {
 function DealerCardHtml(card) {
     let htmlCard = document.createElement("img");
     htmlCard.className = "border border-black border-2 ms-2 me-2 slide-in-right";
-    htmlCard.src = card.imageSrc;
+    if (document.getElementById("DealerSide").childElementCount == 1){
+        htmlCard.src = "/Pics/Cards/back.png";
+    }
+    else {
+        htmlCard.src = card.imageSrc
+    }
     htmlCard.height = 225;
     htmlCard.width = 150;
     document.getElementById("DealerSide").appendChild(htmlCard);
@@ -108,6 +113,7 @@ function UserHit() {
 
 function UserStand() {
     userStand = true;
+    document.getElementById("DealerSide").childNodes[1].src = dealerHand[1].imageSrc
     while (!endGame) {
         CheckPoints();
         DrawCard();
@@ -116,21 +122,26 @@ function UserStand() {
 
 function DrawCard() {    if (!endGame) {
         if (!userStand) {
-            userCards.push(deck.pop())
-            UserCardHtml(userCards[userCards.length - 1])
+            userHand.push(deck.pop())
+            UserCardHtml(userHand[userHand.length - 1])
             CheckPoints()
         }
         else {
-            dealerCards.push(deck.pop())
-            DealerCardHtml(dealerCards[dealerCards.length - 1])
+            dealerHand.push(deck.pop())
+            DealerCardHtml(dealerHand[dealerHand.length - 1])
             CheckPoints()
         }
     }
 }
 
 function CheckPoints() {
-    let userPointSum = AddPoints(userCards)
-    let dealerPointSum = AddPoints(dealerCards)
+    let userPointSum = AddPoints(userHand)
+    if (dealerHand.length == 2) {
+        var dealerPointSum = AddPoints([dealerHand[0]])
+    }
+    else {
+        dealerPointSum = AddPoints(dealerHand)
+    }
 
     UserPointsHtml(userPointSum)
     DealerPointsHtml(dealerPointSum)
