@@ -16,27 +16,18 @@ class Card {
     }
 }
 
-
-
-
-// while (!endGame){
-    //     DrawCard()
-    // }
-    
-    
-    
 function StartGame() {
     deck = function () {
         let arr = [];
         for (let suit = 0; suit < 4; suit++) {
-            for (let card = 1; card < 13; card++) {
+            for (let card = 1; card < 14; card++) {
                 arr.push(new Card(suit, (card <= 10 ? card : 10), card))
             }
         }
         return arr;
     }();
     Shuffle();
-    document.getElementById("startBtn").hidden = true;
+    document.getElementById("startBtn").parentElement.parentElement.className = "d-none";
     userHand = [deck.pop(), deck.pop()]
     dealerHand = [deck.pop(), deck.pop()]
     userHand.forEach((x, y) => setTimeout(() => UserCardHtml(x), 225 * (y + 1)));
@@ -50,10 +41,10 @@ function StartGame() {
 }
 
 function RestartGame() {
-    while (document.getElementById("UserSide").hasChildNodes()){
+    while (document.getElementById("UserSide").hasChildNodes()) {
         document.getElementById("UserSide").removeChild(document.getElementById("UserSide").firstChild)
     }
-    while (document.getElementById("DealerSide").hasChildNodes()){
+    while (document.getElementById("DealerSide").hasChildNodes()) {
         document.getElementById("DealerSide").removeChild(document.getElementById("DealerSide").firstChild)
     }
     userHand = []
@@ -64,41 +55,8 @@ function RestartGame() {
     StartGame();
 }
 
-function UserCardHtml(card) {
-    let htmlCard = document.createElement("img");
-    htmlCard.className = "border border-black border-2 ms-2 me-2 slide-in-right";
-    htmlCard.src = card.imageSrc;
-    htmlCard.height = 225;
-    htmlCard.width = 150;
-    htmlCard.id = `${card.value}&${card.suit}`
-    document.getElementById("UserSide").appendChild(htmlCard);
-}
-
-function DealerCardHtml(card) {
-    let htmlCard = document.createElement("img");
-    htmlCard.className = "border border-black border-2 ms-2 me-2 slide-in-right";
-    if (document.getElementById("DealerSide").childElementCount == 1){
-        htmlCard.src = "/Pics/Cards/back.png";
-    }
-    else {
-        htmlCard.src = card.imageSrc
-    }
-    htmlCard.height = 225;
-    htmlCard.width = 150;
-    document.getElementById("DealerSide").appendChild(htmlCard);
-}
-
-function ResultHtml(result) {
-    document.getElementById("Result").innerText = result;
-    document.getElementById("Hit").hidden = true;
-    document.getElementById("Stand").hidden = true;
-    document.getElementById("Result").parentElement.parentElement.className = "col-12 h-50 d-flex justify-content-center position-absolute top-50 start-50 translate-middle"
-    document.getElementById("canvas").className = "col-12 h-100 blur"
-    document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center fade-in-top"
-}
-
 function Shuffle() {
-    for (let i = 0; i < Math.floor(Math.random() * 52); i++) {
+    for (let i = 0; i < Math.floor((Math.random() * 52) + 10); i++) {
         let deckCopy = deck.slice();
         let index = []
         deckCopy.forEach(x => index.push(deckCopy.indexOf(x)))
@@ -107,20 +65,19 @@ function Shuffle() {
     }
 }
 
-function UserHit() {
-    DrawCard()
-}
-
 function UserStand() {
     userStand = true;
     document.getElementById("DealerSide").childNodes[1].src = dealerHand[1].imageSrc
     while (!endGame) {
         CheckPoints();
-        DrawCard();
+        if (AddPoints(dealerHand) < 17) {
+            DrawCard();
+        }
     }
 }
 
-function DrawCard() {    if (!endGame) {
+function DrawCard() {
+    if (!endGame) {
         if (!userStand) {
             userHand.push(deck.pop())
             UserCardHtml(userHand[userHand.length - 1])
@@ -136,7 +93,7 @@ function DrawCard() {    if (!endGame) {
 
 function CheckPoints() {
     let userPointSum = AddPoints(userHand)
-    if (dealerHand.length == 2) {
+    if (dealerHand.length == 2 && !userStand) {
         var dealerPointSum = AddPoints([dealerHand[0]])
     }
     else {
@@ -158,14 +115,6 @@ function CheckPoints() {
     }
 }
 
-function UserPointsHtml(points) {
-    document.getElementById("UserPoints").innerText = points
-}
-
-function DealerPointsHtml(points) {
-    document.getElementById("DealerPoints").innerText = points
-}
-
 function AddPoints(cards) {
     let points = 0
     cards.forEach(x => {
@@ -178,4 +127,46 @@ function AddPoints(cards) {
     })
     return points
 }
+
+function UserCardHtml(card) {
+    let htmlCard = document.createElement("img");
+    htmlCard.className = "border border-black border-2 ms-2 me-2 slide-in-right";
+    htmlCard.src = card.imageSrc;
+    htmlCard.height = 225;
+    htmlCard.width = 150;
+    htmlCard.id = `${card.value}&${card.suit}`
+    document.getElementById("UserSide").appendChild(htmlCard);
+}
+
+function DealerCardHtml(card) {
+    let htmlCard = document.createElement("img");
+    htmlCard.className = "border border-black border-2 ms-2 me-2 slide-in-right";
+    if (document.getElementById("DealerSide").childElementCount == 1) {
+        htmlCard.src = "/Pics/Cards/back.png";
+    }
+    else {
+        htmlCard.src = card.imageSrc
+    }
+    htmlCard.height = 225;
+    htmlCard.width = 150;
+    document.getElementById("DealerSide").appendChild(htmlCard);
+}
+
+function ResultHtml(result) {
+    document.getElementById("Result").innerText = result;
+    document.getElementById("Hit").hidden = true;
+    document.getElementById("Stand").hidden = true;
+    document.getElementById("Result").parentElement.parentElement.className = "col-12 h-50 d-flex justify-content-center position-absolute top-50 start-50 translate-middle"
+    document.getElementById("canvas").className = "col-12 h-100 blur"
+    document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center fade-in-top"
+}
+
+function UserPointsHtml(points) {
+    document.getElementById("UserPoints").innerText = points
+}
+
+function DealerPointsHtml(points) {
+    document.getElementById("DealerPoints").innerText = points
+}
+
 
