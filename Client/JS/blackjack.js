@@ -1,5 +1,3 @@
-// const {rando, randoSequence} = require('@nastyox/rando.js')
-
 var deck;
 var userHand;
 var dealerHand;
@@ -26,6 +24,7 @@ function StartGame() {
         }
         return arr;
     }();
+    Shuffle();
     document.getElementById("startBtn").parentElement.parentElement.className = "d-none";
     userHand = [deck.pop(), deck.pop()]
     dealerHand = [deck.pop(), deck.pop()]
@@ -155,7 +154,7 @@ function ResultHtml(result) {
     document.getElementById("Result").innerText = result;
     document.getElementById("Hit").hidden = true;
     document.getElementById("Stand").hidden = true;
-    document.getElementById("Result").parentElement.parentElement.className = "d-flex col-12 h-50 justify-content-center position-absolute top-50 start-50 translate-middle"
+    document.getElementById("Result").parentElement.parentElement.className = "col-12 h-50 d-flex justify-content-center position-absolute top-50 start-50 translate-middle"
     document.getElementById("canvas").className = "col-12 h-100 blur"
     document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center fade-in-top"
 }
@@ -167,5 +166,3 @@ function UserPointsHtml(points) {
 function DealerPointsHtml(points) {
     document.getElementById("DealerPoints").innerText = points
 }
-
-
