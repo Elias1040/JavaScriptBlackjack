@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html class="h-100 w-100">
+
+<head>
+    <script src="/JS/clientScript.js"></script>
+</head>
+<body>
+    <h1>Hello</h1>
+    <button onclick="socket.send('startGame')">Start game</button>
+    <button onclick="socket.send(`hit,${playerId}`)">hit</button>
+    <button onclick="socket.send(`stand,${playerId}`)">stand</button>
+</body>

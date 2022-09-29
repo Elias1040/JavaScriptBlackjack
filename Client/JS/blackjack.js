@@ -26,7 +26,6 @@ function StartGame() {
         }
         return arr;
     }();
-    Shuffle();
     document.getElementById("startBtn").parentElement.parentElement.className = "d-none";
     userHand = [deck.pop(), deck.pop()]
     dealerHand = [deck.pop(), deck.pop()]
