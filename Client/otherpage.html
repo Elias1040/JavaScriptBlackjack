@@ -3,15 +3,58 @@
 
 <head>
     <script src="/JS/clientScript.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-u1OknCvxWvY5kfmNBILK2hRnQC3Pr17a+RTT6rIHI7NnikvbZlHgTPOOmMi466C8"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/style.css" />
 </head>
-<body>
-    <h1>Hello</h1>
-    <div id="DealerHand"></div>
-    <div class="d-flex gap5">
-        <div id="PlayerHand"></div>
-        <div id="OtherHand"></div>
+
+<body class="h-100 w-100 d-flex align-items-center">
+    <div id="startGame" class="d-flex justify-content-center col-12">
+        <button class="btn btn-primary" onclick="socket.send('startGame')">Start game</button>
     </div>
-    <button onclick="socket.send('startGame')">Start game</button>
-    <button onclick="socket.send(`hit,${playerId}`)">hit</button>
-    <button onclick="socket.send(`stand,${playerId}`)">stand</button>
+    <div id="canvas" class="d-none">
+        <div class="col-12 mb-5">
+            <h4 class="text-center col-12">Dealers Hand</h4>
+            <div id="DealerHand" class="col-12 d-flex justify-content-center gap-2 mt-3 mb-3"></div>
+            <h4 class="text-center col-12">Points: <span id="DealerPoints"></span></h4>
+        </div>
+        <div class="d-flex justify-content-center">
+            <div class="col-5">
+                <h4 class="text-center col-12">Your hand: </h4>
+                <div id="PlayerHand" class="col-12 d-flex justify-content-center gap-2 mt-3 mb-3"></div>
+                <h4 class="text-center col-12">Points: <span id="PlayerPoints"></span></h4>
+            </div>
+            <div class="col-2"></div>
+            <!-- <div class="col-2 d-flex align-items-center">
+                <h1 id="result" class="text-center col-12"></h1>
+            </div> -->
+            <div class="col-5">
+                <h4 class="text-center col-12">Others Hand: </h4>
+                <div class="col-12 d-flex justify-content-center gap-2 mt-3 mb-3" id="OtherHand"></div>
+                <h4 class="text-center col-12">Points: <span id="OthersPoints"></span></h4>
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center gap-3">
+            <button id="hit" class="btn btn-primary col-1" onclick="socket.send(`hit,${playerId}`)">hit</button>
+            <button id="stand" class="btn btn-danger col-1" onclick="socket.send(`stand,${playerId}`)">stand</button>
+        </div>
+    </div>
+    <div class="d-none">
+        <div>
+            <h2 id="result" class="mt-5 mb-5 text-center"></h2>
+            <h4>Try again?</h4>
+            <button onclick="socket.send('restart'); socket.send('startGame')" class="mt-5 btn spin border-0">
+                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor"
+                    class="bi bi-arrow-repeat text-success" viewBox="0 0 16 16">
+                    <path
+                        d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z" />
+                    <path fill-rule="evenodd"
+                        d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z" />
+                </svg>
+            </button>
+        </div>
+    </div>
 </body>

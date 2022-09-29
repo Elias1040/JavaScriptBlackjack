@@ -155,7 +155,7 @@ function ResultHtml(result) {
     document.getElementById("Result").innerText = result;
     document.getElementById("Hit").hidden = true;
     document.getElementById("Stand").hidden = true;
-    document.getElementById("Result").parentElement.parentElement.className = "col-12 h-50 d-flex justify-content-center position-absolute top-50 start-50 translate-middle"
+    document.getElementById("Result").parentElement.parentElement.className = "d-flex col-12 h-50 justify-content-center position-absolute top-50 start-50 translate-middle"
     document.getElementById("canvas").className = "col-12 h-100 blur"
     document.getElementById("Result").parentElement.className = "col-4 border border-2 border bg-white text-center fade-in-top"
 }
