@@ -16,20 +16,31 @@ socket.onmessage = (event) => {
         case "onstartgame":
             {
                 playerId = message[1]
-                let card = document.createElement("img")
-                card.src = message[2]
-                document.body.appendChild(card)
-                card = document.createElement("img")
-                card.src = message[3]
-                document.body.appendChild(card)
+                for (let i = 2; i < 4; i++) {
+                    let card = document.createElement("img")
+                    card.src = message[i]
+                    document.getElementById("PlayerHand").appendChild(card)
+                }
             }
             break;
         case "returnhit":
             {
                 let card = document.createElement("img")
                 card.src = message[1]
-                document.body.appendChild(card)
+                document.getElementById("PlayerHand").appendChild(card)
             }
+            break;
+        case "dealerCards":
+            {
+                let card = document.createElement("img")
+                card.src = message[1]
+                document.getElementById("DealerHand").appendChild(card)
+            }
+            break;
+        case "endresult":
+            let result = document.createElement("h1")
+            result.innerText = message[1]
+            document.body.appendChild(result)
             break;
     }
 }

@@ -3,7 +3,7 @@ const http = require('http');
 const hostname = '192.168.1.18';
 const port = 80;
 const ws = new require("ws")
-const wss = new ws.Server({ noServer : true })
+const wss = new ws.Server({ noServer: true })
 
 const server = http.createServer((req, res) => {
     wss.handleUpgrade(req, req.socket, Buffer.alloc(0), onSocketConnect);
@@ -37,6 +37,7 @@ class User {
         this.id = id
         this.socket = socket
         this.stand = false
+        this.lost = false
         this.cards = []
     }
 }
@@ -46,29 +47,54 @@ const clients = []
 function onSocketConnect(ws) {
     clients.push(new User(clients.length, ws, []))
     ws.on('message', message => {
-        let action = message.toString().split(',')
-        switch (action[0]) {
-            case "hit":
-                let client = clients.find(x => x.id == action[1])
-                if (!client.stand) {
-                    client.socket.send(`returnhit,${DrawCard(client).imageSrc}`)
-                }
-                break;
-            case "stand":
-                clients.find(x => x.id == action[1]).stand = true
-                break;
-            case "startGame":
-                start()
-                clients.forEach(x => {
-                    x.cards.push(deck.pop())
-                    x.cards.push(deck.pop())
-                    x.socket.send(`onstartgame,${x.id},${DrawCard(x).imageSrc},${DrawCard(x).imageSrc}`)
-                }, this)
+        if (!endGame) {
+            let action = message.toString().split(',')
+            switch (action[0]) {
+                case "hit":
+                    {
+                        let client = clients.find(x => x.id == action[1])
+                        if (!client.stand && !client.lost) {
+                            client.socket.send(`returnhit,${DrawCard(client).imageSrc}`)
+                            CheckResults(client)
+                        }
+                        CheckLost(clients)
+                        CheckStands(clients)
+                    }
+                    break;
+                case "stand":
+                    {
+                        let client = clients.find(x => x.id == action[1])
+                        if (!client.stand && !client.lost) {
+                            client.stand = true
+                            CheckStands(clients)
+                        }
+                    }
+                    break;
+                case "startGame":
+                    start()
+                    dealerHand = [deck.pop(), deck.pop()]
+                    clients.forEach(x => {
+                        x.socket.send(`onstartgame,${x.id},${DrawCard(x).imageSrc},${DrawCard(x).imageSrc}`)
+                        x.socket.send(`dealerCards,${dealerHand[0].imageSrc}`)
+                        x.socket.send(`dealerCards,${dealerHand[1].imageSrc}`)
+                        CheckResults(x)
+                    }, this)
+                    CheckLost(clients)
+                    break;
+            }
         }
     })
     // ws.on('close', () => clients.delete(ws))
 }
 
+
+
+function CheckStands(players) {
+    if (players.every(x => x.stand)) {
+        DrawDealerCards(players)
+        CheckEndResults(players)
+    }
+}
 
 
 function start() {
@@ -95,15 +121,48 @@ function Shuffle() {
 }
 
 function DrawCard(user) {
-        if (!user.stand) {
-            user.cards.push(deck.pop())
-            return user.cards[user.cards.length - 1]
-        }
+    if (!user.stand) {
+        user.cards.push(deck.pop())
+        return user.cards[user.cards.length - 1]
+    }
 }
 
-function DrawDealerCards(){
-    dealerHand.push(deck.pop())
-    return dealerHand[dealerHand.length - 1]
+function DrawDealerCards(players) {
+    while (AddPoints(dealerHand) < 17 && players.every(x => AddPoints(x.cards) > AddPoints(dealerHand), this)) {
+        dealerHand.push(deck.pop())
+        players.forEach(x => x.socket.send(`dealerCards,${dealerHand[dealerHand.length - 1].imageSrc}`), this)
+    }
+}
+
+function CheckLost(players) {
+    if (clients.every(x => x.lost, this)) {
+        CheckEndResults(clients)
+    }
+}
+
+function CheckResults(player) {
+    if (AddPoints(player.cards) > 21) {
+        player.lost = true
+        player.stand = true
+        player.socket.send("endresult,You Lost!")
+    }
+}
+
+function CheckEndResults(players) {
+    players.forEach(x => {
+        if (!x.lost) {
+            if ((AddPoints(x.cards) <= 21 && AddPoints(dealerHand) > 21)|| AddPoints(x.cards) > AddPoints(dealerHand)) {
+                x.socket.send("endresult,You Won!")
+            }
+            else if (AddPoints(x.cards) == AddPoints(dealerHand)) {
+                x.socket.send("endresult,Tie!")
+            }
+            else {
+                x.socket.send("endresult,You Lost!")
+            }
+        }
+    }, this)
+    endGame = true;
 }
 
 function AddPoints(cards) {
