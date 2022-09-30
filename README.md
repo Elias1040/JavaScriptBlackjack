@@ -146,3 +146,4 @@ Blakjack is a final exams assignment which is a javascript based blackjack game,
 * Game rooms
 * Betting
 * Better server-side security
+* Help my friend Brian https://github.com/Cabuxito/Cabuxito
