@@ -1,5 +1,5 @@
 // const WebSocket = require('ws')
-var socket = new WebSocket("ws://87.54.196.147:80/")
+var socket = new WebSocket("ws://192.168.137.1:80/")
 // let socket1 = new WebSocket("ws://192.168.137.1:25565/")
 
 var playerId

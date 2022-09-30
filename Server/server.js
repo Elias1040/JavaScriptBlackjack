@@ -1,6 +1,6 @@
 const http = require('http');
 
-const hostname = '192.168.1.18';
+const hostname = '192.168.137.1';
 const port = 80;
 const ws = new require("ws")
 const wss = new ws.Server({ noServer: true })
