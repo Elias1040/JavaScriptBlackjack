@@ -42,7 +42,8 @@ Blakjack is a final exams assignment which is a javascript based blackjack game,
 * Stand: dealer draws his cards and all points will be calculated and the result screen appears
 
 ## Tags
-* [V2.5](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.4)
+* [V2.6](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.6)
+* [V2.5](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.5)
 * [V2.4](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.4)
 * [V2.3](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.3)
 * [V2.2](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.2)
@@ -61,7 +62,10 @@ Blakjack is a final exams assignment which is a javascript based blackjack game,
 
 
 ## Changelog
-
+### [V2.6](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.6) Features:
+* Client max
+* Redirect to sigleplayer on to many clients
+* Close connections
 ### [V2.5](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.5) Features:
 * Page files have been properly renamed
 ### [V2.4](https://github.com/Elias1040/JavaScriptBlackjack/tree/V2.4) Features:
